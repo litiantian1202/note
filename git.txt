@@ -1,3 +1,9 @@
+/*
+ *theme: daily report
+ *Date: 2016.07.05
+ *Author: PJY
+ */
+
 一、最基础：
 	1.	安装git
 		sudo apt-get install git
