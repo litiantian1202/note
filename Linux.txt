@@ -1,3 +1,9 @@
+/*
+ *theme: daily report
+ *Date: 2016.07.04
+ *Author: PJY
+ */
+
 Linux基本操作:
 
 	1.	安装包
