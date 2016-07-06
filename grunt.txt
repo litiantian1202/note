@@ -1,0 +1,223 @@
+/*
+ *theme: daily report
+ *Date: 2016.07.06
+ *Author: PJY
+ */
+
+一、基本知识准备:
+
+	1.	安装grunt和grunt-cli：
+		sudo npm install grunt -g
+		npm install -g grunt-cli（调用与gruntfile在同一目录下的grunt，允许在同一系统上安装多个版本的grunt）
+
+	2.	安装grunt插件
+		npm install <module> --save-dev
+
+	3.	package.json
+		用来存储npm的依赖项
+
+二、
+	1.	Gruntfile:
+		①	包装函数:
+
+			module.exports = function(grunt) {
+				//任务代码
+			}
+
+		②	项目/任务配置
+
+			(1)	initConfig(任务配置和目标):
+
+				grunt.initConfig({
+					concat: {
+						...
+					},
+					uglify: {
+						...
+					},
+					....
+				});
+
+			(2)	options(用来指定覆盖内置属性的默认值)[可选]:
+
+				grunt.initConfig({
+				  concat: {
+				    options: {
+				      // 这里是任务级的Options，覆盖默认值 
+				    },
+				    foo: {
+				      options: {
+				        // "foo" target options may go here, overriding task-level options.
+				      },
+				    },
+				    bar: {
+				      // No options specified; this target will use task-level options.
+				    },
+				  },
+				});
+
+			(3)	文件：
+
+				所有的文件格式都支持src和dest属性(可理解为源文件和目标文件)
+
+				src: ['src/xx.js','src/xx.js'],
+				dest: 'dest/xx.min.js'
+				---------------------------------
+				files: {
+					'dest/xx.min.js': ['xx.js','xx.js']
+				}
+				---------------------------------
+				files: [
+			        {src: ['src/aa.js', 'src/aaa.js'], dest: 'dest/a.js'},
+			        {src: ['src/aa1.js', 'src/aaa1.js'], dest: 'dest/a1.js'},
+			    ]
+
+			(4)	通配符模式
+
+				* 匹配任意数量的字符，但不匹配 /
+				? 匹配单个字符，但不匹配 /
+				** 匹配任意数量的字符，包括 /，只要它是路径中唯一的一部分
+				{} 允许使用一个逗号分割的“或”表达式列表
+				! 在模式的开头用于排除一个匹配模式所匹配的任何文件
+
+			(5)	动态构建文件对象
+
+				cwd   所有src指定的匹配都将相对于此处指定的路径（但不包括此路径）
+				src   相对于cwd路径的匹配模式。
+				dest  目标文件路径前缀。
+				ext   对于生成的dest路径中所有实际存在文件，均使用这个属性值替换扩展名。
+
+				extDot  用于指定标记扩展名的英文点号的所在位置。可以赋值 'first' （扩展名从文件名中的第一个英文点号开始） 或 'last' （扩展名从最后一个英文点号开始），默认值为 'first' [添加于 0.4.3 版本]
+
+				flatten 从生成的dest路径中移除所有的路径部分。
+
+				rename 对每个匹配的src文件调用这个函数(在重命名后缀和移除路径之后。dest和匹配的src路径将被作为参数传入，此函数应该返回一个新的dest值。如果相同的dest返回不止一次，那么，每个返回此值的src来源都将被添加到一个数组中作为源列表。
+				-----------------------
+				eg.
+
+				files: [
+		        {
+		         	expand: true,     
+		         	cwd: 'lib/',      
+		         	src: ['**/*.js'],
+		         	dest: 'build/',   
+		          	ext: '.min.js',  
+		         	extDot: 'first'   
+		        },
+		      	],
+
+		    (6)	模板【<% %> 执行任意内联的JavaScript代码。对于控制流或者循环来说是非常有用的】
+
+		    	eg.
+
+		    	grunt.initConfig({
+				  concat: {
+				    sample: {
+				      options: {
+				        banner: '/* <%= baz %> */\n',   // '/* abcde */\n'
+				      },
+				      src: ['<%= qux %>', 'baz/*.js'],  // [['foo/*.js', 'bar/*.js'], 'baz/*.js']
+				      dest: 'build/<%= baz %>.js',      // 'build/abcde.js'
+				    },
+				  },
+				  //用于任务配置模板的任意属性
+				  foo: 'c',
+				  bar: 'b<%= foo %>d', // 'bcd'
+				  baz: 'a<%= bar %>e', // 'abcde'
+				  qux: ['foo/*.js', 'bar/*.js'],
+				});	
+				
+			(7)	从外部导入数据：
+
+				grunt.file.readJSON('package.json');
+				grunt.file.readYAML('xxx.yml');
+
+				eg.
+				pkg: grunt.file.readJSON('package.json');
+				就可以通过pkg.xxx方式访问其中数据了
+
+			(8)	加载模块文件：
+
+				grunt.loadNpmTasks('grunt-contrib-uglify');
+
+			(9)	注册任务
+
+				grunt.registerTasks('default',['jshint','concat',...]);	同时默认加载多个任务 。
+
+			(10)执行任务(命令行)
+
+				grunt  执行default
+				grunt taskName	执行taskName
+
+
+		2.	常用功能(使用记得加载模块):
+
+			①	合并文件【grunt-contrib-concat】
+
+				concat: {
+					options: {
+						separator: ';'
+						/*可选属性
+							(1)	separator 用于分割各个文件的文字
+							(2)	banner  头部注释信息
+							(3)	footer  尾部注释信息
+							(4)	stripBanners  去掉源代码注释信息(只清除/*xxx*/格式的)
+						*/
+					},
+					dist: {
+						src: ['xxx.js','xxx.js'],
+						dest: 'dest/xxx.js'
+					}
+				}
+
+			②	压缩js文件【grunt-contrib-uglify】
+
+				uglify: {
+					options: {
+						banner: '/*! 头部注释信息*/'
+					},
+					build: {
+						src: 'dest/xx.js',
+						dest: 'dest/xx.min.js'
+					}
+				}
+
+				直接用uglify压缩合并:
+				uglify: {
+					"my_target": {
+						"files":	{
+							'dest/xxx.min.js': ['xxx.js','xxx.js','xxx.js']
+						}
+					}
+				}
+
+			③	压缩样式文件【grunt-contrib-cssmin】
+
+				cssmin: {
+					compress: {
+						files: {
+							'dest/xxx.min.css': ["src/xx.css", "src/xx.css"]
+						}
+					}
+				}
+
+			④	检测文件中的js语法问题【grunt-contrib-jshint】
+				要用的话要自定一些规范
+
+				jshint: {
+					options: {
+						/* 忽略某种错误 */
+						'-W033': true
+					},
+					all: ['src/test.js']
+				}
+
+
+
+
+
+
+
+
+
+
