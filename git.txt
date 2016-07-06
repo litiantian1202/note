@@ -1,0 +1,225 @@
+一、最基础：
+	1.	安装git
+		sudo apt-get install git
+
+	2.	配置git
+		git config --global user.name "your name"
+
+		git config --global user.email "your email" 
+
+	3.	创建版本库(repository)
+		mkdir learngit
+		cd learngit
+		pwd
+
+	4.	初始化git仓库
+		git init
+
+	5.	将文件添加到仓库
+		git add <file>
+
+	6.	将文件提交到仓库
+		git commit -m 'description'
+
+	7.	查看当前仓库状态(哪些文件做了改动，是否提交)
+		git status
+
+	8.	查看文件做了什么改动
+		git diff
+
+二、版本回退
+	
+	1.	显示从最近到最远的提交日志
+		git log(无法退出命令?按q!)
+
+	2.	跳转到指定版本	
+		git reset --hard HEAD^	(回退到上一个版本)
+		or
+		git reset --hard HEAD~n	(第上n个版本)
+
+		git reset --hard <commit id>	(回退到commit id的版本)
+
+	3.	查看历史命令  
+		git reflog  
+		记录每一次的命令,不用害怕回退之后找不到之前commit id
+
+	4.	撤销修改
+		git checkout -- file
+		丢弃工作区的修改，回到上一次提交的状态
+		or
+		git reset HEAD file
+		也可以把暂存区的修改回退到工作区
+
+	5.	从版本库中删除文件
+		git rm filename
+
+三、远程仓库
+	
+	1.	创建SSH Key
+		ssh-keygen -t rsa -C "youremail@example.com"
+
+		【cd ~/.ssh可以看到id_rsa(私钥)和id_rsa.pub(公钥)】
+
+	2.	将公钥添加到GitHub:
+		打开GitHub->Account-settings->SSH Keys
+		在文本框中粘贴id_rsa.pub文件的内容
+
+	3.	添加远程库
+		git remote add origin <git address>
+
+	4.	push 到远程库
+		第一次提交  git push origin +master  
+		以后直接  git push origin master
+
+	5.	从远程库克隆项目
+		cd <your folder>
+		git clone <git address>
+
+四、分支管理
+	
+	1.	创建分支
+		git branch <branch name>
+
+		切换到分支
+		git checkout <branch name>
+
+		创建并切换
+		git checkout -b <branch name>
+
+		查看分支
+		git branch [-ra]
+		----------------------
+			不带参数  列出本地已经存在的分支
+			-r        列出远程分支
+			-a 		  列出本地分支和远程分支
+			-m <branch name>       重命名分支
+			-M <branch name>       分支名冲突的话强制重命名
+			-d <branch name>       删除分支
+			-d -r <branch name>    删除远程分支
+			-D <branch name>	   强制删除分支
+
+		合并指定分支(a)到当前分支
+		git merge <a>
+
+		删除分支
+		git branch -d <branch name>
+
+	2.	分支冲突
+
+		提示分支冲突之后，查看文件内容，会有：
+		<<<<<<< HEAD
+		Creating a new branch is quick & simple.
+		=======
+		Creating a new branch is quick AND simple.
+		>>>>>>> feature1
+
+		git如上来标记出冲突↑↑↑
+
+		修改内容为Creating a new branch is quick AND simple.之后再提交，成功
+
+		查看分支的合并情况
+		git log --graph --pretty=oneline(一行显示，只显示哈希值和提交说明) --abbrev-commit(commit id简短且唯一的值)    
+
+	3.	分支管理策略(禁用Fast forward模式)
+
+		合并分支的时候(创建一个新的commit)
+		git merge --no-ff -m 'merge with no-ff' <branch name>
+
+	4.	储存分支(储藏当前工作现场,可以先进行别的分支工作,之后恢复)
+
+		git stash  保存当前工作现场
+
+		git stash list    查看stash列表
+
+		git stash apply   恢复工作现场
+		git stash apply stash@{0}  有多个stash的话可以恢复指定的stash
+		git stash drop	  删除stash内容
+		or
+		git stash pop     恢复的同时删除stash
+
+	5.  feature分支(开发新功能时最好新建featrue分支，避免实验性代码将主分支搞乱)
+
+		要删除未合并的分支(已add和commit)的话，使用命令:
+		git branch -D <branch name>
+
+	6.	多人协作
+
+		查看远程库
+		git remote	(默认origin)
+		or
+		git remote -v	(显示更详细的信息【抓取地址和push地址】)
+
+		推送分支【见三、远程仓库】
+
+		克隆【见三、远程仓库】
+
+		如果往远程push的时候出现冲突
+		git pull把最新提交从origin抓取下来
+		如果显示no tracking information
+		说明本地分支和远程分支的链接关系没有创建	
+		git branch --set-upstream <branch name> origin/<branch name>  【建立本地分支和远程分支的关联】
+		然后再git pull
+		解决分支冲突
+
+		在本地创建和远程分支对应的分支
+		git checkout -b <branch name> origin/<branch name>
+
+五、标签(相当于某时刻版本库的一个快照)管理
+	
+	新建标签
+	git tag <tag name>
+	给历史版本建立标签
+	git tag <tag name> <commit id>
+	创建带有说明的标签
+	git tag -a <tag name> -m 'description' <commit id>
+
+	查看所有标签
+	git tag
+	
+	查看标签信息
+	git show <tag name>
+
+	删除标签
+	git tag -d <tag name>
+
+	推送标签到远程
+	git push origin <tag name>
+
+	一次推送所有尚未推送到远程的本地标签
+	git push origin --tags
+
+	删除远程分支
+	git tag -d <tag name>  删除本地标签
+	git push origin :refs/tags/<tag name> 删除远程标签
+
+六、自定义Git
+	
+	忽略特殊文件
+	touch .gitignore 【创建.gitignore文件，将要忽略的文件或目录写进去】
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
