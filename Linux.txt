@@ -286,14 +286,8 @@ Linux基本操作:
 			用firefox打开html文件
 			firefox a.html
 
-
-
-
-
-
-
-
-
+		⑨	Ctrl + Alt + T
+			打开终端
 
 
 
