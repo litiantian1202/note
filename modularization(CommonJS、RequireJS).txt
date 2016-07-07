@@ -4,7 +4,7 @@
  *Author: PJY
  */
 
-模块化编程学习笔记(CommonJS、AMD、CMD)：
+模块化编程学习笔记(CommonJS、AMD)：
 
 一、CommonJS(同步加载)【服务器端】
 
