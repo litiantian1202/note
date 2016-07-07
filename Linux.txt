@@ -280,7 +280,11 @@ Linux基本操作:
 			查找文件大小恰好为100字节的文件
 			find . -size 100c -print
 
+		⑧	启动firefox浏览器
+			firefox
 
+			用firefox打开html文件
+			firefox a.html
 
 
 
