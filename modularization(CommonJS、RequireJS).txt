@@ -1,0 +1,288 @@
+/*
+ *theme: daily report
+ *Date: 2016.07.07
+ *Author: PJY
+ */
+
+模块化编程学习笔记(CommonJS、AMD、CMD)：
+
+一、CommonJS(同步加载)【服务器端】
+
+	1.	CommonJS定义的模块分为:
+		①	模块引用(require) -- 引入外部模块
+		②	模块定义(exports) -- 导出当前模块的方法或变量
+		③	模块标识(module) -- 代表模块本身
+		---------------------------------------------------
+		来个最简单的小例子:
+		//partA.js
+		var A = "a";
+		module.exports = A;
+
+		//partB.js
+		var A = require('./partA');
+		var B = A + "b";
+		module.exports = B;
+
+		//main.js
+		var B = require('./partB');
+		var say = B + "  end";
+		console.log(say);
+
+		命令行:
+		node main.js //输出'ab  end';
+
+	2.	由以上我们大概可以看出来，CommonJS主要用于后端，不适用与浏览器端。
+		原因如下：
+		①	require加载文件时是同步加载，需要等待加载完成，网速不好会造成程序卡壳
+		②	服务器端加载时从磁盘加载，而浏览器端加载时需要通过网络加载，也就造成了③
+		③	服务器端的话CPU和内存资源是瓶颈，而浏览器端的话带宽和网速是瓶颈
+
+	3.	优点：
+		①	服务端模块能够重复利用
+		②	有优秀的包管理工具npm
+
+	4.	缺点：
+		①	不能做到并行加载
+		②	不适用于浏览器端的使用
+
+二、AMD(异步加载)--require.js
+
+	1.	AMD模式，所有依赖这个模块的语句，都定义在一个回调函数中，等到加载完成之后，这个回调函数才会运行。
+		AMD也采用require()，但是不同的是，AMD模式的require需要两个参数:
+
+		require([module], callback);----加载一系列模块
+
+		define([depends], callback);----定义并暴露一个模块
+
+	2.	优点
+
+		适合浏览器的异步加载机制
+		并行加载模块
+
+	3.	缺点
+
+		代码难以经营和维护
+
+三、Require.js【浏览器端】
+	
+	1.	提供的功能
+
+		①	声明不同js文件之间的依赖
+		②	可以按需、并行、延时载入js库
+		③	可以让我们的代码以模块化的方式组织
+
+	2.	引入require.js
+
+		<script src="/path/to/require.js" data-main="/path/to/app/config.js"></script>
+		-----------------------------------------------------
+		require.js提供了两个全局变量:
+		①	requirejs/require--->用来配置requirejs及载入入口模块。如果其中一个命名被其它库使用了，我们可以用另一个
+		②	define--->定义一个模块：
+			----------------------------
+			值对：
+			define({
+			    color: "black",
+			    size: "unisize"
+			});
+
+			函数：
+			define(function () {
+			    return {
+			        color: "black",
+			        size: "unisize"
+			    }
+			});
+
+			有函数依赖:
+			//partA.js
+			define(function() {
+				var A = function() {
+					alert("AAAAA");
+				}
+				return A;
+			});
+
+			//partB.js
+			define(function() {
+				var B = "BBBBB";
+				return B;
+			});
+
+			//app.js
+			define(['./partA','./partB'],function(A, B) {
+				return {
+			        partA: A,
+			        partB: function() {
+			        	alert(B);
+			        }
+			    }
+			});
+			//config.js
+			requirejs.config({
+			  	baseUrl: './',
+			  	paths: {
+			    	app: 'app'
+			  	}
+			});
+
+			requirejs(['app'], function(app) {
+			  	app.partA();
+			  	app.partB();
+			});
+
+			定义命名模块:
+			define("foo/title",
+		        ["my/cart", "my/inventory"],
+		        function(cart, inventory) {
+		            ....
+		        }
+		    );
+
+		    与commonjs配合:
+		    define(["require"], function(require) {
+			    var a = require("./a");
+			});
+			or:
+			define(function(require) {
+			    var a = require("./a");
+			});
+
+
+
+		plus--->还可以把 require 当作依赖的模块，然后调用它的方法：
+			define(["require"], function(require) {
+			    var cssUrl = require.toUrl("./style.css");
+			});
+		-----------------------------------------------------
+		config.js的作用：
+
+		①	配置require.js中需要的模块
+
+			(1)	module ID无需再加上.js后缀，进行baseUrl + paths解析
+			(2)	想跳过baseUrl + paths解析(直接加载相对于当前HTML文档的脚本)可以：
+				->以.js结束
+				->以"/"开始
+				->包含URL协议,"http:"或"https:"
+			------------------------------------------
+			//config.js
+			requirejs.config({
+			 	 baseUrl: '/your baseurl',
+			 	 paths: {
+			 	   app: 'app'
+			  	}
+			});
+
+			requirejs(['app'], function(app) {
+			  	app.hello();
+			});
+
+			//app.js
+			define([], function() {
+			 	 return {
+			    	hello: function() {
+			    	 	alert("hello, app~");
+			  	 	}
+			 	 }
+			});
+
+		②	没用define(...)组织的代码,用shim暴露某个全局变量给requirejs:
+
+			//hello.js
+			function hello() {
+			  	alert("hello, world~");
+			}
+
+			//config.js
+			requirejs.config({
+			 	 baseUrl: '/public/js',
+			 	 paths: {
+			    	hello: 'hello'
+			 	 },
+			 	 shim: {
+			   	 hello: { exports: 'hello' }
+			  	}
+			});
+
+			requirejs(['hello'], function(hello) {
+			 	 hello();
+			});
+
+		③	用init暴露多个全局变量:
+
+			//hello.js
+			function hello() {
+			  	alert("hello, world~");
+			}
+			function hello2() {
+			 	alert("hello, world, again~");
+			}
+
+			//config.js
+			requirejs.config({
+			  baseUrl: '/public/js',
+			  paths: {
+			    hello: 'hello'
+			  },
+			  shim: {
+			    hello: {
+			      init: function() {
+			        return {
+			          hello1: hello,
+			          hello2: hello2
+			        }
+			      }
+			    }
+			  }
+			});
+
+			requirejs(['hello'], function(hello) {
+			  hello.hello1();
+			  hello.hello2();
+			});
+		
+		④	有主模块和无主模块
+
+			比如jquery，jquery中定义了:
+			define('jquery',[],function() {...});
+
+			所以调用的时候，只能用jquery来定义:
+			requirejs.config({
+					baseUrl: '/public/js',
+			 	 	paths: {
+			    	jquery: 'lib/jquery/jquery'
+			  	}
+			});
+			换成:
+			myjquery: 'lib/jquery/jquery'就会报错
+
+			有主模块的好处:
+			声明为有主的，那么所有的模块只能使用同一个名字引用它们，这样系统就只会载入它们一次。
+
+			----------------------------------------
+			有主的模块也能用shim来自定义名字:
+			requirejs.config({
+			  	baseUrl: '/public/js',
+			  	paths: {
+			    	myjquery: 'lib/jquery/jquery'
+			  	},
+			  	shim: {
+			    	myjquery: { exports: 'jQuery' }
+			  	}
+			});
+
+		⑤	map: 对于给定的模块前缀，使用一个不同的模块ID来加载该模块。
+
+			requirejs.config({
+			    map: {
+			        'some/newmodule': {
+			            'foo': 'foo1.2'
+			        },
+			        'some/oldmodule': {
+			            'foo': 'foo1.0'
+			        }
+			    }
+			});
+
+			以上代码"some/newmodule"调用"require("foo")"获得foo1.2
+					"some/oldmodule"调用"require("foo")"获得foo1.0
+
