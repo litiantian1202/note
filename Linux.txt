@@ -291,6 +291,14 @@ Linux基本操作:
 		2.	Ctrl + Alt + T
 			打开终端
 
+		3.	升级node版本
+
+			sudo npm install -g n
+
+			sudo n node-version(如6.2.2)
+			or
+			sudo n stable(安装最新稳定版本的node)
+
 
 
 
