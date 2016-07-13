@@ -1,0 +1,218 @@
+2016.07.12 note
+
+Ⅰ.	git submodule
+
+		A submodule allows you to keep another Git repository in a subdirectory of your repository. The other repository has its own history, which does not interfere with the history of the current repository. This can be used to have external dependencies such as third party libraries for example.
+
+		A record in the .gitmodules file at the root of the source tree assigns a logical name to the submodule and describes the default URL the submodule shall be cloned from. 
+
+	-->	git submodule status
+			[Show the status of the submodules. If --recursive is specified, this command will recurse into nested submodules, and show their status as well.]
+
+	-->	git submodule init 
+
+			[This command does not alter existing information in .git/config. You can then customize the submodule clone URLs in .git/config for your local setup and proceed to git submodule update; you can also just use git submodule update --init without the explicit init step if you do not intend to customize any submodule locations.]
+
+	--> git submodule deinit
+
+	--> git submodule update
+
+Ⅱ.	git clone xxxx --recursive(or --recurse-submodules)
+
+		After the clone is created, initialize all submodules within, using their default settings. This is equivalent to running [git submodule update --init --recursive] immediately after the clone is finished. This option is ignored if the cloned repository does not have a worktree/checkout (i.e. if any of --no-checkout/-n, --bare, or --mirror is given)
+
+Ⅲ.	ES6  => (Arrow Function)
+	
+    1.	() => { ... } // 零个参数用 () 表示；
+    2.	x => { ... } // 一个参数可以省略 ()；
+    3.	(x, y) => { ... } // 多参数不能省略 ()；
+
+    ① 当需要编写一个简单的单一参数函数时，可以采用箭头函数来书写，标识名=>	表达式。这样就可以省却function和return的输入，还有括号，分号等。
+
+	    eg.
+
+	    // ES5  
+	    var selected = allJobs.filter(function (job) {  
+	      return job.isSelected();  
+	    });  
+	      
+	    // ES6  
+	    var selected = allJobs.filter(job => job.isSelected());  
+	    -------------------------
+	    //ES5
+	    var a = 5;
+			var func = x => x * x;
+			func(a);//25
+
+			//ES6
+			var a = 5;
+			var func = function(x) {
+				return x * x;
+			}
+			func(a);
+			-------------------------
+			// ES5  
+	    var total = values.reduce(function (a, b) {  
+	      return a + b;  
+	    }, 0);  
+	      
+	    // ES6  
+	    var total = values.reduce((a, b) => a + b, 0);  
+	    ---------------------------------
+	    // ES5  
+	    $("#confetti-btn").click(function (event) {  
+	      playTrumpet();  
+	      fireConfettiCannon();  
+	    });  
+
+	    // ES6  
+	    $("#confetti-btn").click(event => {  
+	      playTrumpet();  
+	      fireConfettiCannon();  
+	    });  
+
+	  ②	 普通函数与箭头函数有个微小的不同点。箭头函数没有自己的this值，其this值是通过继承其它传入对象而获得的。
+
+		  eg.
+
+		  //ES5
+		  {  
+	      ...  
+	      addAll: function addAll(pieces) {  
+	        var self = this;  
+	        _.each(pieces, function (piece) {  
+	          self.add(piece);  
+	        });  
+	      },  
+	      ...  
+	    }  
+
+	    //ES6
+	    {  
+			  ...  
+			  addAll: function addAll(pieces) {  
+			    _.each(pieces, piece => this.add(piece));  
+			  },  
+			  ...  
+			}  //不需要用self保存外部this值
+
+Ⅳ.	JS strict mode
+	
+		"use strict"; 
+		[Put in JS File header]
+
+		将"use strict"放在脚本文件的第一行，则整个脚本都将以"严格模式"运行。如果这行语句不在第一行，则无效，整个脚本以"正常模式"运行。如果不同模式的代码文件合并成一个文件，这一点需要特别注意。
+		solution:
+		因为第一种调用方法不利于文件合并，所以更好的做法是，借用第二种方法，将整个脚本文件放在一个立即执行的匿名函数之中。
+
+		(function (){
+			"use strict";
+			// some code here
+		})();
+
+		部分规则:
+
+		1.	变量都必须先用var命令声明，然后再使用。
+		2.	使用构造函数时，如果忘了加new，this不再指向全局对象，而是报错。
+		3.	禁止使用arguments.callee
+		4.	正常模式下，如果对象有多个重名属性，最后赋值的那个属性会覆盖前面的值。严格模式下，这属于语法错误。
+		5.	函数必须声明在顶层,也就是说，不允许在非函数的代码块内声明函数。
+
+Ⅴ.	change sublime text 3 tab indent
+	
+		Preference -> Settings-User
+		add 
+		"tab_size": 2
+
+Ⅵ.	Javascript Array.Methods(部分)
+
+		isArray()
+		concat()
+		entries()-->The method returns a new Array Iterator object that contains the key/							value pairs for each index in the array.
+								
+								var arr = ['a', 'b', 'c'];
+								var eArr = arr.entries();
+
+								console.log(eArr.next().value); // [0, 'a']
+								console.log(eArr.next().value); // [1, 'b']
+								console.log(eArr.next().value); // [2, 'c']
+		every()
+		filter()
+		some()
+		fill(value, start, end)--->The fill() method fills all the elements of an array 							from a start index to an end index with a static value.
+
+		find(callback[, thisArg])--->The find() method returns a value in the array, if 							an element in the array satisfies the provided testing function. 									Otherwise undefined is returned.
+								
+								var arr = [1, 2, 3, 4];
+								function haha(a) {
+									return a > 2;
+								}
+								arr.find(haha);//3
+
+		findIndex()
+		forEach()--->The forEach() method executes a provided function once per array 								element.
+								
+								var arr = ['a', 'b', 'c'];
+								var ha = function(element, index, array) {
+									console.log("element is " + element +", index is " + index + ", array is " + array);
+								}
+								arr.forEach(ha);
+
+		includes(value, fromindex)
+		indexof()
+		join(separator)--->The join() method joins all elements of an array into a string.
+								
+								['a', 'b', 'c'].join(",");//a,b,c
+
+		map()--->The map() method creates a new array with the results of calling a 							provided function on every element in this array.	
+
+						var arr = [1, 2, 3];
+						var m = x => x * x; 
+						var marr = arr.map(m);//[1, 4, 9]
+
+		pop()--->remove last element
+		push()--->add behind
+		shift()--->remove first element
+		unshift()--->add beginning
+
+		reduce()--->[1, 2, 3, 4, 5, 6].reduce((prev, next) => prev + next);//21
+		reduceRight()
+		reverse()
+		slice(start, end)--->The slice() method returns a shallow copy of a portion of an 					array into a new array object.
+
+							var arr = [1, 2, 3, 4, 5];
+							var arr2 = arr.slice(2);
+							log(arr);//[1, 2, 3, 4, 5]
+							log(arr2);//[3, 4, 5]
+
+		splice(start, deleteCount, items)--->
+							The splice() method changes the content of an array by removing existing elements and/or adding new elements.
+
+							var arr = [1, 2, 2, 2, 2, 3, 4, 5];
+							var arr2 = arr.splice(2, 3, 6);
+							log(arr);//[1, 2, 6, 3, 4, 5]
+							log(arr2);//[2, 2, 2]
+
+		values()--->
+
+						var arr = ['w', 'y', 'k', 'o', 'p'];
+						var eArr = arr.values();
+						console.log(eArr.next().value); // w
+						console.log(eArr.next().value); // y
+						console.log(eArr.next().value); // k
+						console.log(eArr.next().value); // o
+						console.log(eArr.next().value); // p
+
+
+Ⅶ.	pm2 是一个带有负载均衡功能的Node应用的进程管理器.当你要把你的独立代码利用全部的服务器上的所有CPU，并保证进程永远都活着，0秒的重载， PM2是完美的。
+
+Ⅷ.
+
+Ⅸ.
+
+Ⅹ.
+
+Ⅺ.
+
+Ⅻ.
+
