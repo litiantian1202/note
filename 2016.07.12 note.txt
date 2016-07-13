@@ -128,7 +128,7 @@
 
 		isArray()
 		concat()
-		entries()-->The method returns a new Array Iterator object that contains the key/							value pairs for each index in the array.
+		entries()-->The method returns a new Array Iterator object that contains the key/value pairs for each index in the array.
 								
 								var arr = ['a', 'b', 'c'];
 								var eArr = arr.entries();
@@ -139,9 +139,9 @@
 		every()
 		filter()
 		some()
-		fill(value, start, end)--->The fill() method fills all the elements of an array 							from a start index to an end index with a static value.
+		fill(value, start, end)--->The fill() method fills all the elements of an array from a start index to an end index with a static value.
 
-		find(callback[, thisArg])--->The find() method returns a value in the array, if 							an element in the array satisfies the provided testing function. 									Otherwise undefined is returned.
+		find(callback[, thisArg])--->The find() method returns a value in the array, if an element in the array satisfies the provided testing function. Otherwise undefined is returned.
 								
 								var arr = [1, 2, 3, 4];
 								function haha(a) {
@@ -150,7 +150,7 @@
 								arr.find(haha);//3
 
 		findIndex()
-		forEach()--->The forEach() method executes a provided function once per array 								element.
+		forEach()--->The forEach() method executes a provided function once per array element.
 								
 								var arr = ['a', 'b', 'c'];
 								var ha = function(element, index, array) {
@@ -164,7 +164,7 @@
 								
 								['a', 'b', 'c'].join(",");//a,b,c
 
-		map()--->The map() method creates a new array with the results of calling a 							provided function on every element in this array.	
+		map()--->The map() method creates a new array with the results of calling a provided function on every element in this array.	
 
 						var arr = [1, 2, 3];
 						var m = x => x * x; 
@@ -178,7 +178,7 @@
 		reduce()--->[1, 2, 3, 4, 5, 6].reduce((prev, next) => prev + next);//21
 		reduceRight()
 		reverse()
-		slice(start, end)--->The slice() method returns a shallow copy of a portion of an 					array into a new array object.
+		slice(start, end)--->The slice() method returns a shallow copy of a portion of an array into a new array object.
 
 							var arr = [1, 2, 3, 4, 5];
 							var arr2 = arr.slice(2);
