@@ -1,4 +1,8 @@
-2016.07.12 note
+/*
+ *theme: daily report
+ *Date: 2016.07.11
+ *Author: PJY
+ */
 
 Ⅰ.	git submodule
 
