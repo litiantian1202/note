@@ -209,6 +209,42 @@
 
 
 Ⅶ.	pm2 是一个带有负载均衡功能的Node应用的进程管理器.当你要把你的独立代码利用全部的服务器上的所有CPU，并保证进程永远都活着，0秒的重载， PM2是完美的。
+		
+		start server:
+		1.	pm2 start app.js
+
+		2.	pm2 start app.json
+
+				eg.
+
+				{
+				  "apps" : [{
+				    "script"      : "worker.js",
+				    "watch"       : true,
+				    "env": {
+				      "NODE_ENV": "development",
+				    },
+				    "env_production" : {
+				       "NODE_ENV": "production"
+				    }
+				  },{
+				    "name"       : "api-app",
+				    "script"     : "api.js",
+				    "instances"  : 4,
+				    "exec_mode"  : "cluster"
+				  }]
+				}
+
+				name: app's name
+
+				script:	script path relative to pm2 start
+
+				env: env variables which will appear in your app
+
+				watch: enable watch & restart feature, if a file change in the folder or subfolder, your app will get reloaded
+
+				ignore_watch: list of regex to ignore some file or folder names by the watch feature
+
 
 Ⅷ.
 
