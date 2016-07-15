@@ -1,0 +1,127 @@
+/*
+ *theme: daily report
+ *Date: 2016.07.14
+ *Author: PJY
+ */
+
+Ⅰ. Refs和findDOMNode()
+
+    为了和浏览器交互，你将需要对DOM节点的引用。React提供了React.findDOMNode(component)函数，你可以调用这个函数来获取该组件的DOM结点。
+
+    注意：
+
+    findDOMNode()仅在挂载的组件上有效（也就是说，组件已经被放进了DOM中）。如果你尝试在一个未被挂载的组件上调用这个函数（例如在创建组件的render()函数中调用findDOMNode()），将会抛出异常。
+    
+    eg.
+
+    React.findDOMNode(this.refs.myTextInput).focus();
+
+    <input type="text" ref="myTextInput" />
+
+Ⅱ. React组件生命周期
+
+    组件的生命周期包含三个主要部分：
+
+    挂载： 组件被插入到DOM中。
+    更新： 组件被重新渲染，查明DOM是否应该刷新。
+    移除： 组件从DOM中移除。
+
+    React提供生命周期方法，你可以在这些方法中放入自己的代码。React提供will方法，会在某些行为发生之前调用，和did方法，会在某些行为发生之后调用.
+
+    1. 挂载
+
+       getInitialState(): object在组件被挂载之前调用。状态化的组件应该实现这个方法，返回初始的state数据。
+
+       componentWillMount()在挂载发生之前立即被调用。
+
+       componentDidMount()在挂载结束之后马上被调用。需要DOM节点的初始化操作应该放在这里。
+
+    2. 更新 
+
+       componentWillReceiveProps(object nextProps)当一个挂载的组件接收到新的props的时候被调用。该方法应该用于比较this.props和nextProps，然后使用this.setState()来改变state。
+
+       shouldComponentUpdate(object nextProps, object nextState): boolean当组件做出是否要更新DOM的决定的时候被调用。实现该函数，优化this.props和nextProps，以及this.state和nextState的比较，如果不需要React更新DOM，则返回false。
+
+       componentWillUpdate(object nextProps, object nextState)在更新发生之前被调用。你可以在这里调用this.setState()。
+
+       componentDidUpdate(object prevProps, object prevState)在更新发生之后调用。
+
+    3. 移除
+
+       componentWillUnmount()在组件移除和销毁之前被调用。清理工作应该放在这里。
+
+    4. 此外，React 还提供两种特殊状态的处理函数。
+
+      componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用
+      shouldComponentUpdate(object nextProps, object nextState)：组件判断是否重新渲染时调用
+
+
+
+Ⅲ. JSX基本语法规则
+
+    上面代码体现了 JSX 的基本语法规则：遇到 HTML 标签（以 < 开头），就用 HTML 规则解析；遇到代码块（以 { 开头），就用 JavaScript 规则解析。
+
+    eg.
+
+    ReactDOM.render(
+      <div>
+      {
+        names.map(function (name) {
+          return <div>Hello, {name}!</div>
+        })
+      }
+      </div>,
+      document.getElementById('example')
+    );
+
+    添加组件属性，有一个地方需要注意，就是 class 属性需要写成 className ，for 属性需要写成 htmlFor ，这是因为 class 和 for 是 JavaScript 的保留字。
+
+Ⅳ. this.props.children 属性。它表示组件的所有子节点
+
+    this.props.children 的值有三种可能：如果当前组件没有子节点，它就是 undefined ;如果有一个子节点，数据类型是 object ；如果有多个子节点，数据类型就是 array 。所以，处理 this.props.children 的时候要小心。
+
+    React 提供一个工具方法 React.Children 来处理 this.props.children 。我们可以用 React.Children.map 来遍历子节点，而不用担心 this.props.children 的数据类型是 undefined 还是 object
+
+    getDefaultProps方法可以用来设置组件属性的默认值。
+
+V.  组件类的PropTypes属性，就是用来验证组件实例的属性是否符合要求
+
+
+    var MyTitle = React.createClass({
+      propTypes: {
+        title: React.PropTypes.string.isRequired,
+      },
+      render: function() {
+         return <h1> {this.props.title} </h1>;
+       }
+    });
+
+Ⅵ. React虚拟 DOM,有时需要从组件获取真实 DOM 的节点，这时就要用到 ref 属性
+
+    组件并不是真实的 DOM 节点，而是存在于内存之中的一种数据结构，叫做虚拟 DOM （virtual DOM）。只有当它插入文档以后，才会变成真实的 DOM 。根据 React 的设计，所有的 DOM 变动，都先在虚拟 DOM 上发生，然后再将实际发生变动的部分，反映在真实 DOM上，这种算法叫做 DOM diff ，它可以极大提高网页的性能表现。
+
+    需要注意的是，由于 this.refs.[refName] 属性获取的是真实 DOM ，所以必须等到虚拟 DOM 插入文档以后，才能使用这个属性，否则会报错。上面代码中，通过为组件指定 Click 事件的回调函数，确保了只有等到真实 DOM 发生 Click 事件之后，才会读取 this.refs.[refName] 属性。
+
+Ⅶ. this.state
+
+    组件免不了要与用户互动，React 的一大创新，就是将组件看成是一个状态机，一开始有一个初始状态，然后用户互动，导致状态变化，从而触发重新渲染 UI .
+
+    getInitialState 方法用于定义初始状态，也就是一个对象，这个对象可以通过 this.state 属性读取。当用户点击组件，导致状态变化，this.setState 方法就修改状态值，每次修改以后，自动调用 this.render 方法，再次渲染组件。
+
+    由于 this.props 和 this.state 都用于描述组件的特性，可能会产生混淆。一个简单的区分方法是，this.props 表示那些一旦定义，就不再改变的特性，而 this.state 是会随着用户互动而产生变化的特性。
+
+    文本输入框的值，不能用 this.props.value 读取，而要定义一个 onChange 事件的回调函数，通过 event.target.value 读取用户输入的值。textarea 元素、select元素、radio元素都属于这种情况
+
+Ⅷ. 组件的style属性的设置方式也值得注意，不能写成
+
+    style="opacity:{this.state.opacity};"
+    而要写成
+    style={{opacity: this.state.opacity}}
+
+
+
+
+
+
+
+
